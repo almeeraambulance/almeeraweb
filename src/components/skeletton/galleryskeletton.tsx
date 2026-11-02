@@ -11,7 +11,7 @@ export default function GallerySkeleton({
 }: GallerySkeletonProps) {
   return (
     <div
-      className={`relative overflow-hidden bg-neutral-200 rounded-lg w-full h-full ${className}`}
+      className={`relative overflow-hidden bg-neutral-200 rounded-sm w-full h-full ${className}`}
     >
       {/* Shimmer Glare dengan animasi bergerak */}
       <div className="absolute inset-0 skeleton-shimmer" />

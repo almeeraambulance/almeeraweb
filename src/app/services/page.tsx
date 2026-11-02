@@ -7,26 +7,32 @@ import Breadcrumb from "../../components/Breadcrumb";
 import FormModal from "../../components/FormModal";
 import ServicesSkeleton from "../../components/skeletton/servicesskeletton";
 
-function ServiceCard({
-  card,
-  onOpenModal,
-}: {
-  card: any;
-  onOpenModal: (title: string) => void;
-}) {
+interface ServiceItem {
+  readonly title: string;
+  readonly desc: string;
+  readonly img: string;
+  readonly icon: string;
+}
+
+interface ServiceCardProps {
+  readonly card: ServiceItem;
+  readonly onOpenModal: (title: string) => void;
+}
+
+function ServiceCard({ card, onOpenModal }: ServiceCardProps) {
   const [isLoading, setIsLoading] = useState(true);
 
-  // Memastikan skeleton tampil instan di awal dan memberikan waktu visual yang pas sebelum konten asli terbuka
+  // skeleton timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 700); // Durasi skeleton tampil pas untuk efek visual high-end
+    }, 700);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <article className="relative bg-white rounded-lg overflow-hidden border border-gray-100 flex flex-col justify-between">
-      {/* Skeleton muncul langsung secara instan sejak halaman dibuka */}
+      {/* skeleton */}
       <div
         className={`absolute inset-0 z-30 transition-opacity duration-500 ${
           isLoading
@@ -37,13 +43,13 @@ function ServiceCard({
         <ServicesSkeleton className="w-full h-full" />
       </div>
 
-      {/* Konten Asli Card */}
+      {/* content */}
       <div
         className={`flex flex-col justify-between w-full h-full transition-opacity duration-500 ${
           isLoading ? "opacity-0" : "opacity-100"
         }`}
       >
-        {/* top content */}
+        {/* top section */}
         <div className="bg-[#193286] text-white p-6 md:p-8 flex flex-col justify-between h-[350px] md:h-[360px]">
           <div>
             <div className="flex justify-between items-start mb-4 h-[64px] md:h-[72px]">
@@ -95,7 +101,7 @@ export default function ServicesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedServiceTitle, setSelectedServiceTitle] = useState("");
 
-  const cards = [
+  const cards: readonly ServiceItem[] = [
     {
       title: "Pelayanan Jemput Antar Pasien",
       desc: "Layanan transportasi medis untuk menjemput dan mengantar pasien dari rumah ke rumah sakit, klinik, puskesmas, atau fasilitas kesehatan lainnya dengan aman, nyaman, dan tepat waktu.",
@@ -150,7 +156,6 @@ export default function ServicesPage() {
       img: "/assets/card/kremasi.jpeg",
       icon: "/assets/icons/kremasi.svg",
     },
-
   ];
 
   const handleOpenModal = (title: string) => {
@@ -163,7 +168,7 @@ export default function ServicesPage() {
       {/* breadcrumb */}
       <Breadcrumb items={[{ label: "Layanan Kami" }]} />
 
-      {/* header section */}
+      {/* header */}
       <header className="mb-14 text-left">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
@@ -176,7 +181,7 @@ export default function ServicesPage() {
         </motion.h1>
       </header>
 
-      {/* services grid */}
+      {/* grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {cards.map((card, idx) => (
           <ServiceCard key={idx} card={card} onOpenModal={handleOpenModal} />

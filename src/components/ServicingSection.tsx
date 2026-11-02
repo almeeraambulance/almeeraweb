@@ -6,16 +6,22 @@ import { motion, useMotionValue, animate } from "framer-motion";
 import FormModal from "../components/FormModal";
 import ServicingSectionSkeleton from "../components/skeletton/servicingsectionskeletton";
 
-function ServiceCardItem({
-  card,
-  onOpenModal,
-}: {
-  card: any;
-  onOpenModal: (title: string) => void;
-}) {
+interface ServiceItem {
+  readonly title: string;
+  readonly desc: string;
+  readonly img: string;
+  readonly icon: string;
+}
+
+interface ServiceCardItemProps {
+  readonly card: ServiceItem;
+  readonly onOpenModal: (title: string) => void;
+}
+
+function ServiceCardItem({ card, onOpenModal }: ServiceCardItemProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Skeleton tampil instan di awal, lalu konten asli muncul mulus saat gambar siap
+  // skeleton timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
@@ -31,7 +37,7 @@ function ServiceCardItem({
       }}
       className="card-item w-[340px] sm:w-[340px] md:w-[360px] flex-shrink-0 bg-white rounded-lg overflow-hidden border border-gray-100 flex flex-col justify-between relative"
     >
-      {/* Skeleton Shimmer - Tampil instan tanpa terhalang opacity kontainer */}
+      {/* skeleton */}
       <div
         className={`absolute inset-0 z-30 transition-opacity duration-500 ${
           isLoaded
@@ -42,7 +48,7 @@ function ServiceCardItem({
         <ServicingSectionSkeleton className="w-full h-full" />
       </div>
 
-      {/* Konten Asli Card */}
+      {/* content */}
       <div
         className={`flex flex-col justify-between w-full h-full transition-opacity duration-500 ${
           isLoaded ? "opacity-100" : "opacity-0"
@@ -112,7 +118,7 @@ export default function ServicingSection() {
   const totalDots = 8;
 
   // cards data
-  const cards = [
+  const cards: readonly ServiceItem[] = [
     {
       title: "Pelayanan Jemput Antar Pasien",
       desc: "Layanan transportasi medis untuk menjemput dan mengantar pasien dari rumah ke rumah sakit, klinik, puskesmas, atau fasilitas kesehatan lainnya dengan aman, nyaman, dan tepat waktu.",
@@ -245,7 +251,7 @@ export default function ServicingSection() {
         Paket layanan transportasi
       </motion.h2>
 
-      {/* carousel wrapper dengan animasi masuk (slide-up) tanpa menyembunyikan opacity skeleton */}
+      {/* carousel */}
       <motion.div
         initial={{ y: 30 }}
         whileInView={{ y: 0 }}

@@ -62,10 +62,10 @@ export default function Header({ children }: { children?: React.ReactNode }) {
 
   const navLinks = [
     { name: "Beranda", href: "/" },
-    { name: "Tentang Kami", href: "/about" },
     { name: "Layanan", href: "/services" },
-    { name: "Dokumentasi", href: "/gallery" },
+    { name: "Galeri", href: "/gallery" },
     { name: "Kontak", href: "/contact" },
+    { name: "Tentang Kami", href: "/about" },
   ];
 
   return (

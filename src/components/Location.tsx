@@ -57,7 +57,7 @@ export default function Location() {
         </div>
       </div>
 
-      {/* Kolom Kanan: Peta Tanpa Border & Tanpa Rounded */}
+      {/*maps */}
       <div
         className={`relative w-full h-[300px] md:h-[350px] bg-gray-100 overflow-hidden transition-all duration-700 delay-200 transform ${
           isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"

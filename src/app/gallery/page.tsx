@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Breadcrumb from "../../components/Breadcrumb";
 import GallerySkeleton from "../../components/skeletton/galleryskeletton";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { createPortal } from "react-dom";
 
@@ -50,24 +50,27 @@ export default function GalleryPage() {
   ];
 
   // state
+  const [activeCoverIndex, setActiveCoverIndex] = useState<number>(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const [readyImages, setReadyImages] = useState<{ [key: number]: boolean }>(
     {},
   );
 
+  // Ref untuk mendeteksi drag agar tidak bentrok dengan klik lightbox
+  const isDraggingRef = useRef(false);
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
 
-    // Memberikan jeda minimum yang pas agar skeleton langsung terpampang indah saat halaman pertama dibuka
     const timer = setTimeout(() => {
       const initialReady: { [key: number]: boolean } = {};
       galleryItems.forEach((_, idx) => {
         initialReady[idx] = true;
       });
       setReadyImages(initialReady);
-    }, 700);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [galleryItems]);
@@ -84,7 +87,7 @@ export default function GalleryPage() {
     };
   }, [selectedIndex]);
 
-  // handlers
+  // handlers lightbox
   const handleNext = () => {
     if (selectedIndex !== null) {
       setSelectedIndex((selectedIndex + 1) % galleryItems.length);
@@ -99,8 +102,21 @@ export default function GalleryPage() {
     }
   };
 
+  // handlers coverflow slider navigation (Infinite Loop)
+  const handleCoverflowPrev = () => {
+    setActiveCoverIndex((prev) =>
+      prev > 0 ? prev - 1 : galleryItems.length - 1,
+    );
+  };
+
+  const handleCoverflowNext = () => {
+    setActiveCoverIndex((prev) =>
+      prev < galleryItems.length - 1 ? prev + 1 : 0,
+    );
+  };
+
   return (
-    <main className="max-w-7xl mx-auto px-6 md:px-12 py-10 text-black">
+    <main className="max-w-7xl mx-auto px-6 md:px-12 py-10 text-black overflow-x-hidden">
       {/* breadcrumb */}
       <Breadcrumb items={[{ label: "Dokumentasi" }]} />
 
@@ -116,37 +132,127 @@ export default function GalleryPage() {
         </motion.h1>
       </header>
 
-      {/* photo grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {galleryItems.map((item, idx) => (
-          <div
-            key={idx}
-            onClick={() => setSelectedIndex(idx)}
-            className="bg-white p-3 sm:p-4 rounded-sm shadow-md border border-gray-100 overflow-hidden cursor-pointer flex flex-col"
+      {/* 3D Coverflow Container (Infinite & Anti-Jitter) */}
+      <div className="relative w-full py-12 overflow-hidden flex flex-col items-center select-none">
+        <motion.div
+          className="relative w-full h-[400px] sm:h-[480px] md:h-[540px] flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-y"
+          style={{ perspective: "1400px", transformStyle: "preserve-3d" }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragStart={() => {
+            isDraggingRef.current = true;
+          }}
+          onDragEnd={(e, { offset, velocity }) => {
+            const swipeThreshold = 30;
+            if (offset.x < -swipeThreshold || velocity.x < -200) {
+              handleCoverflowNext();
+            } else if (offset.x > swipeThreshold || velocity.x > 200) {
+              handleCoverflowPrev();
+            }
+            setTimeout(() => {
+              isDraggingRef.current = false;
+            }, 100);
+          }}
+        >
+          {galleryItems.map((item, idx) => {
+            // Algoritma jarak sirkular untuk infinite loop tanpa batas
+            const total = galleryItems.length;
+            let diff = idx - activeCoverIndex;
+            while (diff > total / 2) diff -= total;
+            while (diff < -total / 2) diff += total;
+
+            // Render item dalam radius jangkauan 3D agar performa tetap ringan
+            if (Math.abs(diff) > 3) return null;
+
+            const absDiff = Math.abs(diff);
+            const rotateY = diff === 0 ? 0 : diff < 0 ? 30 : -30;
+            const scale = diff === 0 ? 1 : Math.max(0.75, 1 - absDiff * 0.1);
+
+            const translateX =
+              diff *
+              (typeof window !== "undefined" && window.innerWidth < 640
+                ? 120
+                : 260);
+            const zIndex = 50 - absDiff;
+            const opacity = diff === 0 ? 1 : Math.max(0.35, 1 - absDiff * 0.3);
+
+            return (
+              <motion.div
+                key={idx}
+                initial={false}
+                animate={{
+                  x: translateX,
+                  scale: scale,
+                  rotateY: rotateY,
+                  opacity: opacity,
+                  zIndex: zIndex,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                }}
+                onClick={() => {
+                  if (isDraggingRef.current) return;
+                  if (diff === 0) {
+                    setSelectedIndex(idx);
+                  } else {
+                    setActiveCoverIndex(idx);
+                  }
+                }}
+                className="absolute w-[220px] sm:w-[290px] md:w-[350px] h-[340px] sm:h-[430px] md:h-[490px] bg-white p-3 sm:p-3 rounded-sm shadow-2xl border border-gray-200 overflow-hidden cursor-pointer origin-center will-change-transform flex flex-col"
+              >
+                {/* Gambar dengan Bingkai & Skeleton */}
+                <div className="relative w-full h-[250px] sm:h-[330px] md:h-[390px] overflow-hidden bg-neutral-100 rounded-sm">
+                  {!readyImages[idx] && (
+                    <GallerySkeleton className="absolute inset-0 w-full h-full z-10" />
+                  )}
+                  <Image
+                    src={item.img}
+                    alt={item.title}
+                    fill
+                    priority={idx < 3}
+                    onLoad={() =>
+                      setReadyImages((prev) => ({ ...prev, [idx]: true }))
+                    }
+                    className={`object-cover transition-opacity duration-500 pointer-events-none ${
+                      readyImages[idx] ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                </div>
+
+                {/* Title Card */}
+                <div className="pt-3 pb-1 px-1 text-left flex items-center flex-grow">
+                  <h3 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 line-clamp-1">
+                    {item.title}
+                  </h3>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Tombol Navigasi Circular (Bg transparan, putih saat hover, ukuran icon 8) */}
+        <div className="flex items-center gap-6 mt-8 z-10">
+          <button
+            onClick={handleCoverflowPrev}
+            className="w-14 h-14 rounded-full border border-gray-300 bg-transparent hover:bg-white shadow-none hover:shadow-md flex items-center justify-center text-gray-800 transition-all cursor-pointer"
+            aria-label="Previous Cover"
           >
-            <div className="relative h-72 md:h-86 w-full overflow-hidden bg-neutral-100 rounded-sm">
-              {/* Gallery Skeleton Shimmer - Tampil instan di awal */}
-              {!readyImages[idx] && (
-                <GallerySkeleton className="absolute inset-0 w-full h-full z-10" />
-              )}
-              <Image
-                src={item.img}
-                alt={item.title}
-                fill
-                priority={idx < 3}
-                onLoad={() =>
-                  setReadyImages((prev) => ({ ...prev, [idx]: true }))
-                }
-                className={`object-cover transition-opacity duration-500 ${
-                  readyImages[idx] ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            </div>
-          </div>
-        ))}
+            <ChevronLeft className="w-8 h-8 stroke-[2.5]" />
+          </button>
+          <button
+            onClick={handleCoverflowNext}
+            className="w-14 h-14 rounded-full border border-gray-300 bg-transparent hover:bg-white shadow-none hover:shadow-md flex items-center justify-center text-gray-800 transition-all cursor-pointer"
+            aria-label="Next Cover"
+          >
+            <ChevronRight className="w-8 h-8 stroke-[2.5]" />
+          </button>
+        </div>
       </div>
 
-      {/* lightbox modal */}
+      {/* Lightbox Modal */}
       {mounted &&
         createPortal(
           <AnimatePresence>
@@ -158,16 +264,16 @@ export default function GalleryPage() {
                 className="fixed inset-0 w-screen h-dvh z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 touch-none overflow-hidden"
                 onClick={() => setSelectedIndex(null)}
               >
-                {/* close button */}
+                {/* Close Button */}
                 <button
                   onClick={() => setSelectedIndex(null)}
                   className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white p-2 transition-colors z-50 cursor-pointer hover:opacity-85"
                   aria-label="Tutup"
                 >
-                  <X className="w-12 h-12" />
+                  <X className="w-12 h-12 stroke-[2.5]" />
                 </button>
 
-                {/* prev button */}
+                {/* Prev Button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -176,10 +282,10 @@ export default function GalleryPage() {
                   className="absolute left-2 sm:left-6 text-white p-2 sm:p-3 transition-colors z-50 cursor-pointer hover:opacity-85"
                   aria-label="Sebelumnya"
                 >
-                  <ChevronLeft className="w-16 h-16" />
+                  <ChevronLeft className="w-16 h-16 stroke-[2.5]" />
                 </button>
 
-                {/* next button */}
+                {/* Next Button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -188,10 +294,10 @@ export default function GalleryPage() {
                   className="absolute right-2 sm:right-6 text-white p-2 sm:p-3 transition-colors z-50 cursor-pointer hover:opacity-85"
                   aria-label="Selanjutnya"
                 >
-                  <ChevronRight className="w-16 h-16" />
+                  <ChevronRight className="w-16 h-16 stroke-[2.5]" />
                 </button>
 
-                {/* image container with swipe support (frameless) */}
+                {/* Image container dengan swipe support */}
                 <motion.div
                   key={selectedIndex}
                   initial={{ opacity: 0, scale: 0.98 }}
