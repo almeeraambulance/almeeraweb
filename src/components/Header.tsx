@@ -249,7 +249,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
                   />
                 </div>
                 <span className="text-xs sm:text-sm font-black tracking-tight">
-                  Darurat 24 Jam
+                  Layanan Darurat
                 </span>
               </a>
 

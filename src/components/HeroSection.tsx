@@ -59,7 +59,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: -40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
-          className="bg-[#b81424] text-white rounded-lg shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-red-500/40"
+          className="bg-[#b81424] text-white rounded-lg shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-red-500/40 will-change-transform"
         >
           {menuItems.map((item, idx) => (
             <a

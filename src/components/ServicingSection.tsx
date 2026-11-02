@@ -17,51 +17,69 @@ export default function ServicingSection() {
   const [selectedServiceTitle, setSelectedServiceTitle] = useState("");
 
   const x = useMotionValue(0);
-  const totalDots = 4;
+  const totalDots = 8;
 
   // cards data
   const cards = [
     {
-      title: "Pengiriman Jenazah",
-      desc: "Layanan pengurusan dan pengiriman jenazah secara profesional untuk rute dalam negeri maupun luar negeri (international repatriation).",
-      img: "/assets/ambulance.jpeg",
-      icon: "/assets/icons/pengiriman_jenazah.svg",
-    },
-    {
-      title: "Pengiriman Abu Jenazah",
-      desc: "Prosedur penanganan dan pengiriman abu jenazah yang aman, legal, serta terpercaya baik domestik maupun internasional.",
-      img: "/assets/abu.jpeg",
-      icon: "/assets/icons/pengiriman_abu.svg",
-    },
-    {
-      title: "Pengurusan Jenazah",
-      desc: "Pengurusan dokumen, kepabeanan, dan penjemputan kedatangan jenazah dari luar atau dalam negeri secara tuntas.",
-      img: "/assets/kedatangan.jpeg",
-      icon: "/assets/icons/kedatangan_jenazah.svg",
-    },
-    {
-      title: "Pelayanan Pemakaman",
-      desc: "Pengaturan prosesi pemakaman lengkap dengan pendampingan penuh untuk meringankan keluarga yang ditinggalkan.",
-      img: "/assets/pelayanan.jpeg",
-      icon: "/assets/icons/pelayanan_pemakaman.svg",
-    },
-    {
-      title: "Peti Jenazah",
-      desc: "Penyediaan berbagai pilihan peti jenazah berkualitas tinggi, mulai dari standar hingga kelas khusus sesuai kebutuhan.",
-      img: "/assets/cargo.jpg",
-      icon: "/assets/icons/peti_jenazah.svg",
-    },
-    {
-      title: "Mobil Jenazah & Ambulance",
-      desc: "Armada kendaraan khusus jenazah dan ambulance siaga yang nyaman, bersih, serta dilengkapi standar medis kedukaan.",
-      img: "/assets/card-workplace.webp",
+      title: "Pelayanan Jemput Antar Pasien",
+      desc: "Layanan transportasi medis untuk menjemput dan mengantar pasien dari rumah ke rumah sakit, klinik, puskesmas, atau fasilitas kesehatan lainnya dengan aman, nyaman, dan tepat waktu.",
+      img: "/assets/card/antar_jemput.jpeg",
       icon: "/assets/icons/ambulance.svg",
     },
     {
-      title: "Layanan Kremasi",
-      desc: "Fasilitas dan pengurusan proses kremasi yang tertib, khidmat, serta sesuai dengan regulasi yang berlaku.",
-      img: "/assets/kremasi.jpeg",
+      title: "Pelayanan Pasien Kontrol",
+      desc: "Melayani kebutuhan transportasi pasien yang harus menjalani pemeriksaan atau kontrol rutin ke rumah sakit maupun klinik. Didukung armada yang nyaman untuk memastikan perjalanan pasien tetap aman.",
+      img: "/assets/card/pasien_control.jpeg",
+      icon: "/assets/icons/ambulance.svg",
+    },
+    {
+      title: "Sewa Ambulance Jenazah Dalam & Luar Kota",
+      desc: "Menyediakan layanan transportasi jenazah untuk tujuan dalam maupun luar kota dengan penanganan yang profesional, hormat, dan sesuai prosedur yang berlaku.",
+      img: "/assets/card/mobil_jenazah.jpeg",
+      icon: "/assets/icons/kedatangan_jenazah.svg",
+    },
+    {
+      title: "Pelayanan Pasien Ventilator",
+      desc: "Layanan ambulance khusus yang dilengkapi peralatan medis pendukung untuk pasien yang membutuhkan ventilator selama proses pemindahan atau rujukan antar fasilitas kesehatan.",
+      img: "/assets/card/ventilator.jpeg",
+      icon: "/assets/icons/ventilator.svg",
+    },
+    {
+      title: "Pelayanan Ambulance Evakuasi",
+      desc: "Layanan evakuasi pasien dalam kondisi darurat maupun non-darurat dari lokasi kejadian, rumah, kantor, atau fasilitas kesehatan menuju tempat perawatan yang dituju.",
+      img: "/assets/card/evakuasi.jpeg",
+      icon: "/assets/icons/ambulance.svg",
+    },
+    {
+      title: "Sewa Ambulance Standar",
+      desc: "Pilihan ambulance dengan fasilitas standar yang ideal untuk kebutuhan transportasi pasien umum, kontrol kesehatan, rujukan medis, maupun kebutuhan non-darurat lainnya.",
+      img: "/assets/card/ambulance_standar.jpeg",
+      icon: "/assets/icons/ambulance.svg",
+    },
+    {
+      title: "Sewa Ambulance VIP",
+      desc: "Layanan ambulance premium dengan fasilitas yang lebih lengkap dan nyaman untuk memberikan pengalaman perjalanan medis yang aman, eksklusif, dan berkualitas.",
+      img: "/assets/card/ambulance_vip.jpeg",
+      icon: "/assets/icons/ambulance.svg",
+    },
+    {
+      title: "Sewa Ambulance Standby Event",
+      desc: "Menyediakan unit ambulance dan tenaga medis yang siap siaga untuk berbagai kegiatan seperti seminar, konser, olahraga, acara perusahaan, kegiatan sosial, dan event lainnya.",
+      img: "/assets/card/evakuasi.jpeg",
+      icon: "/assets/icons/ambulance.svg",
+    },
+    {
+      title: "Pelayanan Kedukaan, Kremasi, & Formalin",
+      desc: "Memberikan layanan kedukaan secara menyeluruh mulai dari penanganan jenazah, proses formalin, hingga layanan kremasi dengan pendampingan yang profesional dan penuh empati.",
+      img: "/assets/card/kremasi.jpeg",
       icon: "/assets/icons/kremasi.svg",
+    },
+    {
+      title: "Penyediaan Peti Muslim & Non-Muslim",
+      desc: "Menyediakan berbagai pilihan peti jenazah Muslim dan non-Muslim dengan kualitas terbaik untuk memenuhi kebutuhan keluarga sesuai tradisi, agama, dan anggaran yang tersedia.",
+      img: "/assets/card/peti_jenazah.jpeg",
+      icon: "/assets/icons/peti_jenazah.svg",
     },
   ];
 
@@ -129,6 +147,7 @@ export default function ServicingSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
         className="text-3xl md:text-4xl font-black text-[#193286] text-center mb-14"
       >
         Paket layanan transportasi
@@ -140,6 +159,7 @@ export default function ServicingSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
         className="overflow-hidden py-4"
         ref={containerRef}
       >
@@ -150,18 +170,22 @@ export default function ServicingSection() {
           dragTransition={{ power: 0.2, timeConstant: 150 }}
           style={{ x }}
           onDragEnd={handleDragEnd}
-          className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing select-none"
+          className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing select-none will-change-transform"
         >
           {cards.map((card, idx) => (
             <article
               key={idx}
+              style={{
+                transform: "translateZ(0)",
+                backfaceVisibility: "hidden",
+              }}
               className="card-item w-[340px] sm:w-[340px] md:w-[360px] flex-shrink-0 bg-white rounded-lg overflow-hidden border border-gray-100 flex flex-col justify-between"
             >
               {/* top content */}
-              <div className="bg-[#193286] text-white p-6 md:p-8 flex flex-col justify-between min-h-[340px]">
+              <div className="bg-[#193286] text-white p-6 md:p-8 flex flex-col justify-between h-[350px]">
                 <div>
                   <div className="flex justify-between items-start mb-4 h-[64px] md:h-[72px]">
-                    <h3 className="text-xl md:text-2xl font-bold max-w-[200px] leading-tight">
+                    <h3 className="text-xl md:text-xl font-bold max-w-[200px] leading-tight">
                       {card.title}
                     </h3>
                     <div className="w-15 h-15 relative flex-shrink-0 mt-0.5 filter brightness-0 invert">
@@ -213,6 +237,7 @@ export default function ServicingSection() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.4 }}
+        style={{ transform: "translateZ(0)" }}
         className="flex justify-center items-center gap-2 mt-10"
         role="tablist"
         aria-label="Carousel pagination dots"
@@ -221,6 +246,7 @@ export default function ServicingSection() {
           <button
             key={idx}
             onClick={() => goToDot(idx)}
+            style={{ transform: "translateZ(0)" }}
             className={`h-5 w-5 rounded-full transition-all duration-300 cursor-pointer ${
               currentDot === idx
                 ? "bg-[#b81424] scale-125"
