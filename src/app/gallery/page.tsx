@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Breadcrumb from "../../components/Breadcrumb";
+import GallerySkeleton from "../../components/skeletton/galleryskeletton";
 import { useState, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { createPortal } from "react-dom";
@@ -11,39 +12,65 @@ export default function GalleryPage() {
   // gallery items
   const galleryItems = [
     {
-      title: "Pengiriman Jenazah",
-      img: "/assets/ambulance.jpeg",
+      title: "Pelayanan Jemput Antar Pasien",
+      img: "/assets/card/antar_jemput.jpeg",
     },
     {
-      title: "Pengiriman Abu Jenazah",
-      img: "/assets/abu.jpeg",
+      title: "Pelayanan Pasien Kontrol",
+      img: "/assets/card/pasien_control.jpeg",
     },
     {
-      title: "Kedatangan Jenazah",
-      img: "/assets/kedatangan.jpeg",
+      title: "Sewa Ambulance Jenazah Dalam & Luar Kota",
+      img: "/assets/card/mobil_jenazah.jpeg",
     },
     {
-      title: "Pelayanan Pemakaman",
-      img: "/assets/pelayanan.jpeg",
+      title: "Pelayanan Pasien Ventilator",
+      img: "/assets/card/ventilator.jpeg",
     },
     {
-      title: "Peti Jenazah",
-      img: "/assets/cargo.jpg",
+      title: "Pelayanan Ambulance Evakuasi",
+      img: "/assets/card/evakuasi.jpeg",
     },
     {
-      title: "Mobil Jenazah & Ambulance",
-      img: "/assets/card-workplace.webp",
+      title: "Sewa Ambulance Standar",
+      img: "/assets/card/ambulance_standar.jpeg",
+    },
+    {
+      title: "Sewa Ambulance VIP",
+      img: "/assets/card/ambulance_vip.jpeg",
+    },
+    {
+      title: "Sewa Ambulance Standby Event",
+      img: "/assets/card/evakuasi.jpeg",
+    },
+    {
+      title: "Pelayanan Kedukaan, Kremasi, & Formalin",
+      img: "/assets/card/kremasi.jpeg",
     },
   ];
 
   // state
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [readyImages, setReadyImages] = useState<{ [key: number]: boolean }>(
+    {},
+  );
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-  }, []);
+
+    // Memberikan jeda minimum yang pas agar skeleton langsung terpampang indah saat halaman pertama dibuka
+    const timer = setTimeout(() => {
+      const initialReady: { [key: number]: boolean } = {};
+      galleryItems.forEach((_, idx) => {
+        initialReady[idx] = true;
+      });
+      setReadyImages(initialReady);
+    }, 700);
+
+    return () => clearTimeout(timer);
+  }, [galleryItems]);
 
   // body scroll lock
   useEffect(() => {
@@ -73,7 +100,7 @@ export default function GalleryPage() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-6 md:px-12 py-10 animate-fade-in text-black">
+    <main className="max-w-7xl mx-auto px-6 md:px-12 py-10 text-black">
       {/* breadcrumb */}
       <Breadcrumb items={[{ label: "Dokumentasi" }]} />
 
@@ -83,34 +110,41 @@ export default function GalleryPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-black text-black tracking-tight mb-4"
+          className="text-4xl md:text-[40px] font-black text-black tracking-tight mb-4"
         >
           Galeri Dokumentasi
         </motion.h1>
       </header>
 
       {/* photo grid */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-2"
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {galleryItems.map((item, idx) => (
           <div
             key={idx}
             onClick={() => setSelectedIndex(idx)}
-            className="group relative h-80 md:h-120 w-full overflow-hidden bg-neutral-100 cursor-pointer"
+            className="bg-white p-3 sm:p-4 rounded-sm shadow-md border border-gray-100 overflow-hidden cursor-pointer flex flex-col"
           >
-            <Image
-              src={item.img}
-              alt={item.title}
-              fill
-              className="object-cover"
-            />
+            <div className="relative h-72 md:h-86 w-full overflow-hidden bg-neutral-100 rounded-sm">
+              {/* Gallery Skeleton Shimmer - Tampil instan di awal */}
+              {!readyImages[idx] && (
+                <GallerySkeleton className="absolute inset-0 w-full h-full z-10" />
+              )}
+              <Image
+                src={item.img}
+                alt={item.title}
+                fill
+                priority={idx < 3}
+                onLoad={() =>
+                  setReadyImages((prev) => ({ ...prev, [idx]: true }))
+                }
+                className={`object-cover transition-opacity duration-500 ${
+                  readyImages[idx] ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            </div>
           </div>
         ))}
-      </motion.div>
+      </div>
 
       {/* lightbox modal */}
       {mounted &&
@@ -121,7 +155,7 @@ export default function GalleryPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 w-screen h-dvh z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 touch-none overflow-hidden"
+                className="fixed inset-0 w-screen h-dvh z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 touch-none overflow-hidden"
                 onClick={() => setSelectedIndex(null)}
               >
                 {/* close button */}
@@ -157,12 +191,12 @@ export default function GalleryPage() {
                   <ChevronRight className="w-16 h-16" />
                 </button>
 
-                {/* image container with swipe support */}
+                {/* image container with swipe support (frameless) */}
                 <motion.div
                   key={selectedIndex}
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.2 }}
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
@@ -179,13 +213,13 @@ export default function GalleryPage() {
                     }
                   }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-4xl h-[70vh] sm:h-[80vh] max-h-[85dvh] flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing"
+                  className="relative w-full max-w-5xl h-[75vh] sm:h-[85vh] max-h-[90dvh] flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing"
                 >
                   <Image
                     src={galleryItems[selectedIndex].img}
                     alt={galleryItems[selectedIndex].title}
                     fill
-                    sizes="(max-width: 768px) 100vw, 800px"
+                    sizes="(max-width: 768px) 100vw, 1000px"
                     className="object-contain"
                     priority
                   />

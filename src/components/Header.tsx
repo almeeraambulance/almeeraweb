@@ -103,11 +103,11 @@ export default function Header({ children }: { children?: React.ReactNode }) {
         >
           <aside
             aria-label="Informasi Darurat"
-            className="text-white text-xs py-2.5 px-4 md:px-12 max-w-7xl mx-auto w-full flex justify-between items-center"
+            className="text-white text-xs py-2.5 px-4 md:px-12 max-w-7xl mx-auto w-full flex justify-between items-center gap-3"
           >
             {/* TICKER */}
-            <div className="flex items-center gap-2 font-semibold text-white text-xs">
-              <div className="overflow-hidden whitespace-nowrap max-w-[290px] sm:max-w-sm md:max-w-4xl relative">
+            <div className="flex items-center gap-2 font-semibold text-white text-xs min-w-0 flex-1">
+              <div className="overflow-hidden whitespace-nowrap w-full relative min-w-0">
                 <div className="animate-marquee inline-flex font-black text-white">
                   <span className="inline-block pr-8">
                     Hubungi kami kapanpun Anda membutuhkan di nomor Whatsapp
@@ -131,7 +131,10 @@ export default function Header({ children }: { children?: React.ReactNode }) {
             </div>
 
             {/* SOCIAL MEDIA */}
-            <div className="flex items-center gap-3 text-xs font-bold">
+            <nav
+              aria-label="Media Sosial"
+              className="flex items-center gap-3 text-xs font-bold shrink-0"
+            >
               <span className="hidden md:inline text-gray-100 font-bold tracking-wider text-[13px]">
                 Ikuti Kami :
               </span>
@@ -185,7 +188,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
                   </svg>
                 </a>
               </div>
-            </div>
+            </nav>
           </aside>
         </div>
 

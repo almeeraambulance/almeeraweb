@@ -34,7 +34,7 @@ export default function WhatsAppFloating() {
       setIsMenuOpen(isBodyLocked);
     };
 
-    // Gunakan MutationObserver untuk memantau perubahan style pada document.body
+    // MutationObserver untuk memantau perubahan style pada document.body
     const observer = new MutationObserver(checkMenuState);
     observer.observe(document.body, {
       attributes: true,
@@ -47,13 +47,13 @@ export default function WhatsAppFloating() {
     return () => observer.disconnect();
   }, []);
 
-  // Jika menu mobile terbuka, jangan render komponen WhatsApp sama sekali
+  // Jika menu mobile terbuka, jangan render komponen WhatsApp
   if (isMenuOpen) return null;
 
   return (
-    // container utama disematkan "group" agar seluruh elemen merespons hover bersamaan
+    // container utama 
     <div className="fixed bottom-10 right-6 z-50 flex items-center gap-3 group select-none">
-      {/* teks bubble pop-up dengan efek genie & ikut naik saat di-hover */}
+      {/* teks bubble pop-up  */}
       <div
         className={`bg-white text-[#0b221d] px-4 py-2.5 rounded-2xl shadow-xl font-bold text-sm tracking-wide border border-gray-100 origin-right transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-1 ${
           showAlert
@@ -72,7 +72,7 @@ export default function WhatsAppFloating() {
         aria-label="Chat WhatsApp 24 Jam"
         className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20"
       >
-        {/* logo dengan animasi hover fluid yang merespons group */}
+        {/* logo  */}
         <div className="relative w-full h-full drop-shadow-xl transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 group-hover:scale-110">
           <Image
             src="/assets/whatsapp.png"

@@ -16,9 +16,9 @@ export default function AboutPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-black text-black tracking-tight"
+          className="text-4xl md:text-[40px] font-black text-black tracking-tight"
         >
-          Tentang Almeera
+          Tentang Kami
         </motion.h1>
       </header>
 

@@ -65,11 +65,11 @@ export default function FormModal({
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="relative w-full max-w-2xl bg-[#f5f2eb] shadow-2xl overflow-hidden rounded-sm border border-neutral-300 max-h-[90vh] flex flex-col my-auto"
         >
-          {/* header dengan info layanan */}
+          {/* header */}
           <header className="bg-[#f5f2eb] text-neutral-900 px-8 py-4 flex items-center justify-between flex-shrink-0 border-b border-neutral-300 rounded-sm">
             <h2
               id="modal-title"
-              className="text-2xl md:text-3xl font-bold text-neutral-900 pr-4 truncate"
+              className="text-xl md:text-2xl font-bold text-neutral-900 pr-4 truncate"
             >
               {selectedService || "Layanan Kedukaan"}
             </h2>

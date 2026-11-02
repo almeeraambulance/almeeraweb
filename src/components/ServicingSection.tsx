@@ -4,6 +4,98 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, animate } from "framer-motion";
 import FormModal from "../components/FormModal";
+import ServicingSectionSkeleton from "../components/skeletton/servicingsectionskeletton";
+
+function ServiceCardItem({
+  card,
+  onOpenModal,
+}: {
+  card: any;
+  onOpenModal: (title: string) => void;
+}) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Skeleton tampil instan di awal, lalu konten asli muncul mulus saat gambar siap
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 700);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <article
+      style={{
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
+      }}
+      className="card-item w-[340px] sm:w-[340px] md:w-[360px] flex-shrink-0 bg-white rounded-lg overflow-hidden border border-gray-100 flex flex-col justify-between relative"
+    >
+      {/* Skeleton Shimmer - Tampil instan tanpa terhalang opacity kontainer */}
+      <div
+        className={`absolute inset-0 z-30 transition-opacity duration-500 ${
+          isLoaded
+            ? "opacity-0 pointer-events-none"
+            : "opacity-100 pointer-events-auto"
+        }`}
+      >
+        <ServicingSectionSkeleton className="w-full h-full" />
+      </div>
+
+      {/* Konten Asli Card */}
+      <div
+        className={`flex flex-col justify-between w-full h-full transition-opacity duration-500 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {/* top content */}
+        <div className="bg-[#193286] text-white p-6 md:p-8 flex flex-col justify-between h-[350px]">
+          <div>
+            <div className="flex justify-between items-start mb-4 h-[64px] md:h-[72px]">
+              <h3 className="text-xl md:text-xl font-bold max-w-[200px] leading-tight">
+                {card.title}
+              </h3>
+              <div className="w-15 h-15 relative flex-shrink-0 mt-0.5 filter brightness-0 invert">
+                <Image
+                  src={card.icon}
+                  alt={card.title}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </div>
+
+            <div className="w-full h-[3px] bg-[#2e50c0] my-3" />
+
+            <p className="text-sm text-gray-100 leading-relaxed">{card.desc}</p>
+          </div>
+
+          {/* button */}
+          <div className="mt-8">
+            <button
+              onClick={() => onOpenModal(card.title)}
+              draggable={false}
+              className="bg-[#b81424] hover:bg-[#9c0e1b] transition-colors py-3 px-6 rounded-full text-center text-white text-sm font-semibold inline-flex items-center justify-center w-full cursor-pointer shadow"
+            >
+              Pesan Sekarang
+            </button>
+          </div>
+        </div>
+
+        {/* image */}
+        <div className="relative h-52 md:h-62 w-full bg-gray-100 overflow-hidden pointer-events-none">
+          <Image
+            src={card.img}
+            alt={card.title}
+            fill
+            onLoad={() => setIsLoaded(true)}
+            className="object-cover"
+          />
+        </div>
+      </div>
+    </article>
+  );
+}
 
 export default function ServicingSection() {
   // refs
@@ -153,14 +245,14 @@ export default function ServicingSection() {
         Paket layanan transportasi
       </motion.h2>
 
-      {/* carousel */}
+      {/* carousel wrapper dengan animasi masuk (slide-up) tanpa menyembunyikan opacity skeleton */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ y: 30 }}
+        whileInView={{ y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
         style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
-        className="overflow-hidden py-4"
+        className="overflow-hidden py-4 will-change-transform"
         ref={containerRef}
       >
         <motion.div
@@ -173,60 +265,11 @@ export default function ServicingSection() {
           className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing select-none will-change-transform"
         >
           {cards.map((card, idx) => (
-            <article
+            <ServiceCardItem
               key={idx}
-              style={{
-                transform: "translateZ(0)",
-                backfaceVisibility: "hidden",
-              }}
-              className="card-item w-[340px] sm:w-[340px] md:w-[360px] flex-shrink-0 bg-white rounded-lg overflow-hidden border border-gray-100 flex flex-col justify-between"
-            >
-              {/* top content */}
-              <div className="bg-[#193286] text-white p-6 md:p-8 flex flex-col justify-between h-[350px]">
-                <div>
-                  <div className="flex justify-between items-start mb-4 h-[64px] md:h-[72px]">
-                    <h3 className="text-xl md:text-xl font-bold max-w-[200px] leading-tight">
-                      {card.title}
-                    </h3>
-                    <div className="w-15 h-15 relative flex-shrink-0 mt-0.5 filter brightness-0 invert">
-                      <Image
-                        src={card.icon}
-                        alt={card.title}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="w-full h-[3px] bg-[#2e50c0] my-3" />
-
-                  <p className="text-sm text-gray-100 leading-relaxed">
-                    {card.desc}
-                  </p>
-                </div>
-
-                {/* button */}
-                <div className="mt-8">
-                  <button
-                    onClick={() => handleOpenModal(card.title)}
-                    draggable={false}
-                    className="bg-[#b81424] hover:bg-[#9c0e1b] transition-colors py-3 px-6 rounded-full text-center text-white text-sm font-semibold inline-flex items-center justify-center w-full cursor-pointer shadow"
-                  >
-                    Pesan Sekarang
-                  </button>
-                </div>
-              </div>
-
-              {/* image */}
-              <div className="relative h-52 md:h-62 w-full bg-gray-100 overflow-hidden pointer-events-none">
-                <Image
-                  src={card.img}
-                  alt={card.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </article>
+              card={card}
+              onOpenModal={handleOpenModal}
+            />
           ))}
         </motion.div>
       </motion.div>

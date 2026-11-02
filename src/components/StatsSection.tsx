@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback, KeyboardEvent } from "react";
-import { useInView, motion, PanInfo } from "framer-motion";
+import {
+  useInView,
+  motion,
+  useMotionValue,
+  animate,
+  PanInfo,
+} from "framer-motion";
 
 function AnimatedCounter({
   value,
@@ -88,7 +94,6 @@ export default function StatsSection() {
     },
   ];
 
-  // Membuat 12 item dengan memetakan sumber gambar secara berulang
   const baseItems = Array.from({ length: 12 }, (_, index) => {
     const sourceItem = gallerySource[index % gallerySource.length];
     return {
@@ -98,14 +103,18 @@ export default function StatsSection() {
     };
   });
 
-  // Duplikasi 3 kali untuk infinite loop mulus ke depan
+  // Duplikasi 3 kali untuk infinite loop yang mulus
   const sliderItems = [...baseItems, ...baseItems, ...baseItems];
 
   const [currentIndex, setCurrentIndex] = useState(baseItems.length);
   const [isPaused, setIsPaused] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
   const [visibleItems, setVisibleItems] = useState(3);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  const x = useMotionValue(0);
+
+  // Update jumlah item & lebar container secara aman di luar render
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
@@ -115,19 +124,58 @@ export default function StatsSection() {
       } else {
         setVisibleItems(3);
       }
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+      }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Hitung lebar setiap kartu termasuk gap (16px) secara aman
+  const gap = 16;
+  const itemWidth =
+    containerWidth > 0
+      ? (containerWidth - gap * (visibleItems - 1)) / visibleItems + gap
+      : 300;
+  const maxDrag = -(sliderItems.length * itemWidth - containerWidth);
+
+  // Sinkronisasi posisi `x` saat `currentIndex` berubah
+  useEffect(() => {
+    if (itemWidth > 0) {
+      const targetX = -currentIndex * itemWidth;
+      animate(x, targetX, {
+        type: "spring",
+        stiffness: 280,
+        damping: 32,
+      });
+    }
+  }, [currentIndex, itemWidth, x]);
+
   const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => prev + 1);
-  }, []);
+    setCurrentIndex((prev) => {
+      const next = prev + 1;
+      if (next >= baseItems.length * 2) {
+        const resetIndex = baseItems.length + 1;
+        x.set(-resetIndex * itemWidth);
+        return resetIndex;
+      }
+      return next;
+    });
+  }, [baseItems.length, itemWidth, x]);
 
   const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => prev - 1);
-  }, []);
+    setCurrentIndex((prev) => {
+      const next = prev - 1;
+      if (next < baseItems.length) {
+        const resetIndex = baseItems.length * 2 - 2;
+        x.set(-resetIndex * itemWidth);
+        return resetIndex;
+      }
+      return next;
+    });
+  }, [baseItems.length, itemWidth, x]);
 
   // Auto-slide bertahap dengan jeda
   useEffect(() => {
@@ -138,28 +186,40 @@ export default function StatsSection() {
     return () => clearInterval(interval);
   }, [isPaused, nextSlide]);
 
-  const handleAnimationComplete = () => {
-    if (currentIndex >= baseItems.length * 2) {
-      setIsResetting(true);
-      setCurrentIndex(baseItems.length);
-      requestAnimationFrame(() => setIsResetting(false));
-    } else if (currentIndex < baseItems.length) {
-      setIsResetting(true);
-      setCurrentIndex(baseItems.length * 2 - 1);
-      requestAnimationFrame(() => setIsResetting(false));
-    }
+  const handleDragStart = () => {
+    setIsPaused(true);
+    x.stop();
   };
 
   const handleDragEnd = (
     _e: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo,
   ) => {
-    const threshold = 50;
-    if (info.offset.x < -threshold) {
-      nextSlide();
-    } else if (info.offset.x > threshold) {
-      prevSlide();
+    setIsPaused(false);
+    const currentX = x.get();
+
+    // Prediksi posisi akhir berdasarkan kecepatan lemparan (velocity)
+    const projectedX = currentX + info.velocity.x * 0.2;
+    let targetIndex = Math.round(-projectedX / itemWidth);
+
+    // Batasi dalam rentang slider items
+    targetIndex = Math.max(
+      0,
+      Math.min(targetIndex, sliderItems.length - visibleItems),
+    );
+
+    // Looping mulus tak terbatas
+    if (targetIndex >= baseItems.length * 2) {
+      targetIndex = baseItems.length + (targetIndex % baseItems.length);
+      x.set(-targetIndex * itemWidth);
+    } else if (targetIndex < baseItems.length) {
+      targetIndex =
+        baseItems.length * 2 -
+        (baseItems.length - (targetIndex % baseItems.length));
+      x.set(-targetIndex * itemWidth);
     }
+
+    setCurrentIndex(targetIndex);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
@@ -239,7 +299,7 @@ export default function StatsSection() {
             </div>
           </header>
 
-          {/* interactive carousel container */}
+          {/* carousel container */}
           <section
             tabIndex={0}
             role="region"
@@ -249,23 +309,15 @@ export default function StatsSection() {
             onMouseLeave={() => setIsPaused(false)}
             className="w-full outline-none focus:ring-2 focus:ring-[#b81424]/40 overflow-hidden pb-10 px-4 md:px-6"
           >
-            <div className="overflow-hidden w-full m-0 p-0">
+            <div className="overflow-hidden w-full m-0 p-0" ref={containerRef}>
               <motion.div
                 className="flex gap-4 cursor-grab active:cursor-grabbing touch-pan-y"
                 drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
+                dragConstraints={{ left: maxDrag < 0 ? maxDrag : 0, right: 0 }}
                 dragElastic={0.1}
-                onDragStart={() => setIsPaused(true)}
+                onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
-                animate={{
-                  x: `calc(-${currentIndex} * (100% / ${visibleItems} + 16px / ${visibleItems}))`,
-                }}
-                transition={
-                  isResetting
-                    ? { duration: 0 }
-                    : { type: "tween", ease: "easeInOut", duration: 0.8 }
-                }
-                onAnimationComplete={handleAnimationComplete}
+                style={{ x }}
               >
                 {sliderItems.map((sub, index) => (
                   <article

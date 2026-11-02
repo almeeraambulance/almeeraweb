@@ -13,20 +13,20 @@ function AnimatedStarRating({
 }) {
   return (
     <div
-      className="flex items-center gap-1 text-xs md:text-xl"
+      className="flex items-center gap-0.5 sm:gap-1 text-xs md:text-sm lg:text-xl"
       aria-label={`${rating} dari 5 bintang`}
     >
       {[1, 2, 3, 4, 5].map((starIndex) => {
         // Hitung persentase pengisian untuk tiap bintang (0% - 100%)
         const fillPercentage = Math.max(
           0,
-          Math.min(100, (rating - (starIndex - 1)) * 100),
+          Math.min(100, (rating - starIndex + 1) * 100),
         );
 
         return (
           <div
             key={starIndex}
-            className="relative inline-block w-5 h-5 md:w-6 md:h-6 shrink-0"
+            className="relative inline-block w-4 h-4 sm:w-5 sm:h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 shrink-0"
           >
             {/* Background Bintang (Abu-abu / Kosong) */}
             <svg
@@ -45,7 +45,7 @@ function AnimatedStarRating({
               }}
             >
               <svg
-                className="w-5 h-5 md:w-6 md:h-6 text-amber-400 fill-current block"
+                className="w-4 h-4 sm:w-5 sm:h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 text-amber-400 fill-current block"
                 viewBox="0 0 24 24"
               >
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -70,7 +70,7 @@ export default function TestimonialsSection() {
           observer.disconnect(); // Animasi hanya berjalan sekali saat pertama kali di-scroll ke sini
         }
       },
-      { threshold: 0.15 }, // Trigger ketika 15% bagian section terlihat di layar
+      { threshold: 0.4 }, // Trigger ketika 40% bagian section terlihat di layar
     );
 
     if (sectionRef.current) {
@@ -118,7 +118,7 @@ export default function TestimonialsSection() {
       </h2>
 
       {/* Testimonial Cards Grid */}
-      <div className="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+      <div className="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
         {testimonials.map((item, idx) => (
           <article
             key={idx}
@@ -126,6 +126,10 @@ export default function TestimonialsSection() {
               isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-12"
+            } ${
+              idx === 2
+                ? "md:col-span-2 md:w-[calc(50%-1rem)] md:mx-auto lg:col-span-1 lg:w-auto"
+                : ""
             }`}
             style={{ transitionDelay: `${idx * 200}ms` }}
           >
@@ -134,7 +138,7 @@ export default function TestimonialsSection() {
               {item.quote}
             </p>
 
-            {/* Footer Kartu (Client & Stars) */}
+            {/* Footer Kartu */}
             <footer className="flex items-center justify-between pt-2 pl-14">
               <span className="font-bold text-sm text-gray-900">
                 {item.name}
@@ -142,7 +146,7 @@ export default function TestimonialsSection() {
               <AnimatedStarRating rating={item.rating} animate={isVisible} />
             </footer>
 
-            {/* Avatar Merah Menggantung Setengah di Pojok Kiri Bawah */}
+            {/* Avatar */}
             <div className="absolute -bottom-6 left-5" aria-hidden="true">
               <div className="w-14 h-14 rounded-full bg-[#b81424] flex items-center justify-center text-white shrink-0 shadow-md">
                 <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
@@ -160,7 +164,7 @@ export default function TestimonialsSection() {
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
       >
-        {/* Left Side: We Accept */}
+        {/* button We Accept */}
         <section className="relative overflow-hidden min-h-[110px] flex items-center justify-between px-6 sm:px-12 py-4 bg-[#b81424]">
           <div className="absolute inset-0 z-0">
             <Image
@@ -185,7 +189,7 @@ export default function TestimonialsSection() {
           </div>
         </section>
 
-        {/* Right Side: Send Us an Email (Direct to Gmail Web Compose) */}
+        {/* button Send Us an Email */}
         <section className="bg-[#ededed] min-h-[110px] flex items-center justify-between px-6 sm:px-12 py-4 relative z-10">
           <div className="flex items-center justify-between w-full max-w-xl mx-auto gap-4">
             <h3 className="text-gray-900 text-lg md:text-xl font-bold tracking-tight">
