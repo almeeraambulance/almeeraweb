@@ -10,17 +10,12 @@
     scroll-behavior: smooth;
     font-family: var(--font-sans);
   }
+  
   body {
     background-color: #fcfbf9;
     color: #1a1a1a;
     overflow-x: hidden;
     margin: 0;
     padding: 0;
-  }
-}
-
-@layer utilities {
-  .font-script {
-    font-family: var(--font-script);
   }
 }

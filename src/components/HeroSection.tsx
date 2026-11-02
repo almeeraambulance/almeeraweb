@@ -45,7 +45,7 @@ export default function HeroSection() {
           priority
         />
         <Image
-          src="/assets/banner_mobile.png"
+          src="/assets/banner_mobile.jpg"
           alt="Banner Almeera Mobile"
           fill
           className="object-cover object-center block sm:hidden"

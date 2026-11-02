@@ -222,13 +222,21 @@ export default function StatsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-12 relative z-20 -mt-48 md:-mt-64">
         <div className="bg-[#f5f2eb] rounded-lg overflow-hidden shadow-none border border-stone-200/60 pb-0">
           {/* card header */}
-          <header className="text-center max-w-3xl mx-auto pt-10 pb-8 px-6 md:pt-14 md:pb-10 space-y-2">
+          <header className="text-center max-w-3xl mx-auto pt-10 pb-8 px-6 md:pt-14 md:pb-10 space-y-3">
             <span className="block text-3xl md:text-4xl text-[#b81424] font-normal tracking-wide font-script">
               Dokumentasi Kegiatan Kami
             </span>
             <p className="text-sm md:text-base text-stone-600 font-medium">
               Berikut beberapa foto kegiatan kami
             </p>
+            <div>
+              <a
+                href="/gallery"
+                className="text-xs sm:text-sm font-bold text-[#b81424] underline underline-offset-4 inline-flex items-center gap-1 pt-1"
+              >
+                Selengkapnya →
+              </a>
+            </div>
           </header>
 
           {/* interactive carousel container */}

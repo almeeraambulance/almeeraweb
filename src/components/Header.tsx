@@ -107,7 +107,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
           >
             {/* TICKER */}
             <div className="flex items-center gap-2 font-semibold text-white text-xs">
-              <div className="overflow-hidden whitespace-nowrap max-w-[200px] sm:max-w-sm md:max-w-4xl relative">
+              <div className="overflow-hidden whitespace-nowrap max-w-[290px] sm:max-w-sm md:max-w-4xl relative">
                 <div className="animate-marquee inline-flex font-black text-white">
                   <span className="inline-block pr-8">
                     Hubungi kami kapanpun Anda membutuhkan di nomor Whatsapp
