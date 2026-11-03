@@ -34,6 +34,7 @@ export default function Location() {
     >
       {/* Kolom Kiri: Teks */}
       <div
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
         className={`space-y-4 transition-all duration-700 transform ${
           isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
         }`}
@@ -59,6 +60,7 @@ export default function Location() {
 
       {/*maps */}
       <div
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
         className={`relative w-full h-[300px] md:h-[350px] bg-gray-100 overflow-hidden transition-all duration-700 delay-200 transform ${
           isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
         }`}

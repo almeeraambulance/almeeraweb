@@ -6,28 +6,25 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 export default function Header({ children }: { children?: React.ReactNode }) {
+  // state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const [isTopBarVisible, setIsTopBarVisible] = useState(true);
 
+  // refs & hooks
   const lastScrollY = useRef(0);
   const scrollPositionRef = useRef(0);
   const pathname = usePathname();
 
-  // SCROLL LOGIC TOP RED BAR (RESPONSIF DI HALAMAN MANAPUN)
+  // scroll behavior effect
   useEffect(() => {
     const handleScroll = () => {
-      // Jangan jalankan kalkulasi scroll jika menu mobile sedang terbuka
       if (mobileMenuOpen) return;
-
       const currentScrollY = window.scrollY;
 
-      // Munculkan bar jika berada di dekat paling atas atau saat men-scroll ke atas di posisi manapun
       if (currentScrollY <= 20 || currentScrollY < lastScrollY.current) {
         setIsTopBarVisible(true);
-      }
-      // Sembunyikan saat men-scroll ke bawah melewati batas 40px
-      else if (currentScrollY > lastScrollY.current && currentScrollY > 40) {
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 40) {
         setIsTopBarVisible(false);
       }
 
@@ -38,23 +35,17 @@ export default function Header({ children }: { children?: React.ReactNode }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [mobileMenuOpen]);
 
-  // BODY SCROLL LOCK PRESERVATION (MENCEGAH LONCAT KE ATAS SAAT HAMBURGER DIPENCET)
+  // body scroll lock effect
   useEffect(() => {
     if (mobileMenuOpen) {
-      // Simpan posisi scroll saat ini sebelum dikunci
       scrollPositionRef.current = window.scrollY;
-
-      // Gunakan overflow hidden murni tanpa mengubah position fixed agar tidak reset ke top (0)
       document.body.style.overflow = "hidden";
       document.body.style.width = "100%";
       document.body.style.position = "relative";
     } else {
-      // Kembalikan style body semula
       document.body.style.overflow = "auto";
       document.body.style.width = "auto";
       document.body.style.position = "static";
-
-      // Kembalikan posisi scroll persis seperti semula sebelum menu dibuka
       window.scrollTo(0, scrollPositionRef.current);
       lastScrollY.current = scrollPositionRef.current;
     }
@@ -70,7 +61,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-[#f5f2eb]">
-      {/* ANIMATION STYLES */}
+      {/* styles */}
       <style jsx>{`
         @keyframes marquee {
           0% {
@@ -87,7 +78,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
         }
       `}</style>
 
-      {/* MAIN WRAPPER */}
+      {/* wrapper */}
       <div
         className={`flex flex-col min-h-screen w-full transition-transform duration-300 ease-in-out bg-[#f5f2eb] ${
           mobileMenuOpen
@@ -95,7 +86,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
             : "translate-x-0 blur-0"
         }`}
       >
-        {/* TOP RED BAR */}
+        {/* top red bar */}
         <div
           className={`w-full bg-[#b81424] overflow-hidden transition-all duration-300 ease-in-out ${
             isTopBarVisible ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
@@ -105,7 +96,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
             aria-label="Informasi Darurat"
             className="text-white text-xs py-2.5 px-4 md:px-12 max-w-7xl mx-auto w-full flex justify-between items-center gap-3"
           >
-            {/* TICKER */}
+            {/* ticker */}
             <div className="flex items-center gap-2 font-semibold text-white text-xs min-w-0 flex-1">
               <div className="overflow-hidden whitespace-nowrap w-full relative min-w-0">
                 <div className="animate-marquee inline-flex font-black text-white">
@@ -117,7 +108,6 @@ export default function Header({ children }: { children?: React.ReactNode }) {
                     Jl. Raden Fatah, Peninggilan Utara, Gang Haji Sibun, RT
                     001/RW 001 No. 14, Kota Tangerang, Banten.
                   </span>
-                  {/* Duplikasi konten agar looping mulus tanpa jeda */}
                   <span className="inline-block pr-8" aria-hidden="true">
                     Hubungi kami kapanpun Anda membutuhkan di nomor Whatsapp
                     0812-8926-4253
@@ -130,7 +120,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
               </div>
             </div>
 
-            {/* SOCIAL MEDIA */}
+            {/* social media */}
             <nav
               aria-label="Media Sosial"
               className="flex items-center gap-3 text-xs font-bold shrink-0"
@@ -192,10 +182,10 @@ export default function Header({ children }: { children?: React.ReactNode }) {
           </aside>
         </div>
 
-        {/* MAIN NAVBAR */}
+        {/* main navbar */}
         <header className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm font-sans w-full">
           <div className="max-w-7xl mx-auto px-4 md:px-12 flex justify-between items-stretch relative">
-            {/* LOGO */}
+            {/* logo */}
             <Link
               href="/"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -217,7 +207,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
               </div>
             </Link>
 
-            {/* DESKTOP NAV */}
+            {/* desktop nav */}
             <nav className="hidden lg:flex items-center gap-10 text-lg font-semibold text-black">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -225,6 +215,12 @@ export default function Header({ children }: { children?: React.ReactNode }) {
                   <Link
                     key={link.href}
                     href={link.href}
+                    onClick={(e) => {
+                      if (link.href === "/" && pathname === "/") {
+                        e.preventDefault();
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
                     className={`transition ${
                       isActive
                         ? "bg-[#b81424] text-white px-2 font-abold rounded-sm"
@@ -237,7 +233,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
               })}
             </nav>
 
-            {/* EMERGENCY BUTTON  */}
+            {/* emergency button */}
             <div className="flex items-center gap-2 py-2">
               <a
                 href="tel:081289264252"
@@ -256,7 +252,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
                 </span>
               </a>
 
-              {/* MOBILE TOGGLE BUTTON */}
+              {/* mobile toggle button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className={`lg:hidden p-2 text-gray-900 focus:outline-none flex items-center justify-center relative z-50 transition-opacity duration-200 ${
@@ -288,18 +284,19 @@ export default function Header({ children }: { children?: React.ReactNode }) {
           </div>
         </header>
 
-        {/* MAIN CONTENT */}
+        {/* main content */}
         <main className="flex-grow w-full">{children}</main>
       </div>
 
-      {/* MOBILE DRAWER MENU */}
-      <div
+      {/* mobile drawer menu */}
+      <aside
+        aria-label="Menu Navigasi Mobile"
         className={`fixed top-0 right-0 w-[280px] h-full bg-[#f5f2eb] shadow-2xl z-50 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:hidden ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div>
-          {/* CLOSE BUTTON */}
+          {/* close button */}
           <div className="flex items-center justify-end px-6 py-6">
             <button
               onClick={() => setMobileMenuOpen(false)}
@@ -312,7 +309,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
             </button>
           </div>
 
-          {/* NAV LINKS */}
+          {/* nav links */}
           <nav className="flex flex-col px-4 font-bold text-lg text-black">
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => {
@@ -321,7 +318,13 @@ export default function Header({ children }: { children?: React.ReactNode }) {
                   <Link
                     key={link.href}
                     href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      if (link.href === "/" && pathname === "/") {
+                        e.preventDefault();
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                      setMobileMenuOpen(false);
+                    }}
                     className={`px-5 py-3 rounded-lg transition-all duration-200 tracking-wide ${
                       isActive
                         ? "bg-[#b81424] text-white font-extrabold"
@@ -335,7 +338,7 @@ export default function Header({ children }: { children?: React.ReactNode }) {
             </div>
           </nav>
         </div>
-      </div>
+      </aside>
     </div>
   );
 }

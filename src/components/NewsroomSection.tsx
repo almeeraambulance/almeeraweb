@@ -20,7 +20,7 @@ function AnimatedStarRating({
         // Hitung persentase pengisian untuk tiap bintang (0% - 100%)
         const fillPercentage = Math.max(
           0,
-          Math.min(100, (rating - starIndex + 1) * 100),
+          Math.min(100, (rating - (starIndex - 1)) * 100),
         );
 
         return (
@@ -110,6 +110,7 @@ export default function TestimonialsSection() {
     >
       {/* Testimonials Title */}
       <h2
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
         className={`text-3xl md:text-4xl font-extrabold text-center text-[#1a1a1a] mb-16 mt-10 transition-all duration-700 transform ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
@@ -122,6 +123,11 @@ export default function TestimonialsSection() {
         {testimonials.map((item, idx) => (
           <article
             key={idx}
+            style={{
+              transform: "translateZ(0)",
+              backfaceVisibility: "hidden",
+              transitionDelay: `${idx * 200}ms`,
+            }}
             className={`bg-white rounded-md p-6 pb-6 shadow-md border border-gray-100 flex flex-col justify-between relative min-h-[220px] transition-all duration-700 transform ${
               isVisible
                 ? "opacity-100 translate-y-0"
@@ -131,7 +137,6 @@ export default function TestimonialsSection() {
                 ? "md:col-span-2 md:w-[calc(50%-1rem)] md:mx-auto lg:col-span-1 lg:w-auto"
                 : ""
             }`}
-            style={{ transitionDelay: `${idx * 200}ms` }}
           >
             {/* Isi Quote */}
             <p className="text-xs md:text-sm text-black leading-relaxed font-normal mb-8">
@@ -160,6 +165,7 @@ export default function TestimonialsSection() {
 
       {/* Bottom Banner Section */}
       <div
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
         className={`w-full grid grid-cols-1 md:grid-cols-2 transition-all duration-1000 delay-500 transform ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}

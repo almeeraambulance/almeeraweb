@@ -24,7 +24,7 @@ export default function FormModal({
   const [destinationAddress, setDestinationAddress] = useState("");
   const [notes, setNotes] = useState("");
 
-  // body scroll lock
+  // scroll lock
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -63,6 +63,7 @@ export default function FormModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.98, y: 10 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
+          style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
           className="relative w-full max-w-2xl bg-[#f5f2eb] shadow-2xl overflow-hidden rounded-sm border border-neutral-300 max-h-[90vh] flex flex-col my-auto"
         >
           {/* header */}
@@ -165,21 +166,21 @@ export default function FormModal({
               />
             </div>
 
-            {/* destination address */}
+            {/* destination address (optional) */}
             <div>
               <label
                 htmlFor="destinationAddress"
                 className="block text-xs font-semibold text-neutral-800 mb-1.5 flex items-center gap-2"
               >
                 <MapPin className="w-4 h-4 text-neutral-700" /> Alamat Tujuan
+                (Opsional)
               </label>
               <textarea
                 id="destinationAddress"
                 rows={2}
-                required
                 value={destinationAddress}
                 onChange={(e) => setDestinationAddress(e.target.value)}
-                placeholder="Masukkan alamat lengkap lokasi tujuan"
+                placeholder="Masukkan alamat lengkap lokasi tujuan (opsional)"
                 className="w-full px-4 py-3 bg-white border border-neutral-300 focus:outline-none focus:border-neutral-900 text-neutral-900 text-sm rounded-sm resize-none"
               />
             </div>
